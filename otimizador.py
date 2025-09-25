@@ -1,13 +1,15 @@
 import pandas as pd
+import os
 from datetime import date
+from openpyxl import Workbook
 
 #Conexão
 print('='*170)
 print('Mova o dataframe .csv para o mesmo nivel de diretório deste programa')
-caminho = input('Digite o nome do arquivo:')
-delimitador = input('\nDigite o caracter que delimita as colunas do csv:') 
+caminho = 'modelo2.csv'#input('Digite o nome do arquivo:')
+delimitador = ';' #input('\nDigite o caracter que delimita as colunas do csv:') 
 print('='*170)
-df = pd.read_csv(caminho, sep=delimitador)
+df = pd.read_csv(caminho, sep=delimitador, engine='python')
 
 #limpeza do df (colunas não utilizadas)
 df = df.drop([
@@ -88,20 +90,19 @@ top_ip_por_epss = df[
         ['IP', 'NVT Name', 'Exploit Prediction Scoring System - EPSS']
     ].fillna(0).sort_values('Exploit Prediction Scoring System - EPSS' ,ascending=False).head(5)
 
-top_ip_por_kev_cvss = df[
+top_ip_por_kev_cvss = df[df['Known Exploited Vulnerability'] != ''][
         ['IP', 'Known Exploited Vulnerability', 'CVSS']
-    ].fillna(0).sort_values(by=['Known Exploited Vulnerability','CVSS'], ascending=False).head(5)
+    ].sort_values(by=['Known Exploited Vulnerability','CVSS'], ascending=[True, False]).head(5)
 
 top_ocorrencias_por_criticidade = df.groupby(
         ['NVT Name', 'CVSS']
     )['Quantia de vulnerabilidade'].sum().reset_index().sort_values(by=['CVSS', 'Quantia de vulnerabilidade'], ascending=False).head(5)
 
-
 total_ip_com_KEV = df[
         df['Known Exploited Vulnerability'].fillna('0') != '0'
     ][
-        ['IP', 'Known Exploited Vulnerability', 'CVEs', 'Criticidade detalhamento']
-    ]
+        ['IP', 'Known Exploited Vulnerability', 'Criticidade Unica', 'CVEs']
+    ].sort_values(by=['Known Exploited Vulnerability'])
 
 #totais
 total_de_os = df.groupby('Sistema_Operacional')['Quantia de vulnerabilidade'].sum().sort_index(ascending=False)
@@ -111,41 +112,34 @@ total_vulnerabilidades_cve = df_apenas_com_cve['Quantia de vulnerabilidade'].sum
 total_de_cve_unicos = df_cve_unico['Quantia de vulnerabilidade'].sum()
 total_vulnerabilidades_unicas = df_vulnerabilidades_unicas['Quantia de vulnerabilidade'].sum()
 
-#variavel com o agrupamento dos dados
-dados_otimizados = '_'*30+\
-                '\nDados Gerais do Dataframe\n'\
-                f'\nNúmero de ativos: {total_ip}'\
-                f'\nQuantia total de vulnerabilidades: {total_vulnerabilidades}'\
-                f'\nQuantia total de vulnerabilidades com CVE: {total_vulnerabilidades_cve}'\
-                f'\nQuantia de CVEs únicos: {total_de_cve_unicos}'\
-                f'\nQuantia total de vulnerabilidades únicas: {total_vulnerabilidades_unicas}\n'\
-                +'_'*30+\
-                f'\nTop 5 IPs por quantia de vulnerabilidades\n\n {top_quantia_por_ip.to_string()}\n'\
-                +'_'*30+\
-                f'\nTop 5 IPs por criticidade\n\n{top_ip_por_cvss.to_string(index=False)}\n'\
-                +'_'*30+\
-                f'\nTop 5 ocorrencias por quantidade\n\n{top_quantia_por_vulnerabilidade.to_string()}\n'\
-                +'_'*30+\
-                f'\nQuantia de cada criticidade \n\n{top_quantia_por_criticidade.to_string()}\n'\
-                +'_'*30+\
-                f'\nQuantia de cada criticidade com CVE \n\n{top_quantia_por_criticidade_cve.to_string()}\n'\
-                +'_'*30+\
-                f'\nTop 5 vulnerabilidades com mais de um ano de lançamento \n\n{top_quantia_por_vulnerabilidade_1ano.to_string()}\n'\
-                +'_'*30+\
-                f'\nTop 5 IP por EPSS \n\n{top_ip_por_epss.to_string(index=False)}\n'\
-                +'_'*30+\
-                f'\nTop 5 IP por KEV e CVSS\n\n{top_ip_por_kev_cvss.to_string(index=False)}\n'\
-                +'_'*30+\
-                f'\nTop 5 vulnerabilidades por CVSS\n\n{top_ocorrencias_por_criticidade.to_string(index=False)}\n'\
-                +'_'*30+\
-                f'\nQuantia de vulnerabilidade por sistema operacional\n\n{total_de_os.to_string()}\n'\
-                +'_'*30+\
-                f'\nIPs que possuem KEV\n\n{total_ip_com_KEV.to_string(index=False)}\n'                
+#dic + df com o agrupamento dos dados gerais
 
-#Finalização 
-with open(f'Dados_otimizados_{caminho}.txt', 'w', encoding='utf-8') as arquivo:
-    print(dados_otimizados, file=arquivo)
+dic_dados_gerais = {
+    'Número de ativos': [total_ip],
+    'Quantia total de vulnerabilidades:': [total_vulnerabilidades],
+    'Quantia total de vulnerabilidades com CVE': [total_vulnerabilidades_cve],
+    'Quantia de CVEs únicos': [total_de_cve_unicos],
+    'Quantia total de vulnerabilidades únicas': [total_vulnerabilidades_unicas]
+}
+
+df_dados_gerais = pd.DataFrame(dic_dados_gerais)
+
+#Finalização
+os.mkdir('dataframes')
+
+df_dados_gerais.to_csv('dataframes/Dados_gerais.csv', index=False, sep=';')
+top_ip_por_kev_cvss.to_csv('dataframes/IP_por_KEV_CVSS.csv', index=False, sep=';')
+top_ocorrencias_por_criticidade.to_csv('dataframes/Ocorrencias_por_criticidade.csv', index=False, sep=';')
+top_quantia_por_vulnerabilidade.to_csv('dataframes/Ocorrencias_por_quantidade.csv', index=False, sep=';')
+total_ip_com_KEV.to_csv('dataframes/IPs_que_possuem_KEV.csv', index=False, sep=';')
+top_ip_por_cvss.to_csv('dataframes/IP_por_CVSS.csv', index=False, sep=';')
+top_quantia_por_ip.to_csv('dataframes/IP_por_quantia.csv', index=True, sep=';')
+top_ip_por_epss.to_csv('dataframes/IP_por_EPSS.csv', index=False, sep=';')
+top_quantia_por_vulnerabilidade_1ano.to_csv('dataframes/Vulnerabilidades_por_quantia.csv', index=True, sep=';')
+top_quantia_por_criticidade.to_csv('dataframes/Quantia_de_cada_criticidade.csv', index=True, sep=';')
+top_quantia_por_criticidade_cve.to_csv('dataframes/Quantia_de_cada_criticidade_com_CVE.csv', sep=';')
+total_de_os.to_csv('dataframes/Vulnerabilidades_por_OS.csv', index=True, sep=';')
 
 print('='*170)
-print('\nArquivo com os dados, criado no mesmo diretório desse script\n')
+print('\Pasta com os dados, criado no mesmo diretório desse script\n')
 print('='*170)
