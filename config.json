@@ -1,0 +1,72 @@
+[
+  {
+    "arquivo_entrada": "dataframes/IP_por_CVSS.csv",
+    "coluna_x": "IP",
+    "coluna_y": "CVSS",
+    "titulo": "IP por CVSS",
+    "tipo": 1
+  },
+  {
+    "arquivo_entrada": "dataframes/IP_por_EPSS.csv",
+    "coluna_x": "IP",
+    "coluna_y": "Exploit Prediction Scoring System - EPSS",
+    "titulo": "IP por EPSS",
+    "tipo": 1
+  },
+  {
+    "arquivo_entrada": "dataframes/IP_por_KEV_CVSS.csv",
+    "coluna_x": "IP",
+    "coluna_y": "CVSS",
+    "titulo": "IP por KEV e CVSS",
+    "tipo": 1
+  },
+  {
+    "arquivo_entrada": "dataframes/IP_por_quantia.csv",
+    "coluna_x": "IP",
+    "coluna_y": "Quantia de vulnerabilidade",
+    "titulo": "IP por quantia",
+    "tipo": 1
+  },
+  {
+    "arquivo_entrada": "dataframes/Ocorrencias_por_criticidade.csv",
+    "coluna_x": "NVT Name",
+    "coluna_y": "CVSS",
+    "titulo": "Ocorrencias por criticidade",
+    "tipo": 2
+  },
+  {
+    "arquivo_entrada": "dataframes/Ocorrencias_por_quantidade.csv",
+    "coluna_x": "NVT Name",
+    "coluna_y": "Quantia de vulnerabilidade",
+    "titulo": "Ocorrencias por quantidade",
+    "tipo": 2
+  },
+  {
+    "arquivo_entrada": "dataframes/Quantia_de_cada_criticidade_com_CVE.csv",
+    "coluna_x": "Criticidade Unica",
+    "coluna_y": "Quantia de vulnerabilidade",
+    "titulo": "Quantia de cada criticidade com CVE",
+    "tipo": 1
+  },
+  {
+    "arquivo_entrada": "dataframes/Quantia_de_cada_criticidade.csv",
+    "coluna_x": "Criticidade Unica",
+    "coluna_y": "Quantia de vulnerabilidade",
+    "titulo": "Quantia de cada criticidade",
+    "tipo": 1
+  },
+  {
+    "arquivo_entrada": "dataframes/Vulnerabilidades_por_OS.csv",
+    "coluna_x": "Sistema Operacional",
+    "coluna_y": "Quantia de vulnerabilidade",
+    "titulo": "Quantia de vulnerabilidades por OS",
+    "tipo": 1
+  },
+  {
+    "arquivo_entrada": "dataframes/Vulnerabilidades_por_quantia.csv",
+    "coluna_x": "NVT Name",
+    "coluna_y": "Quantia de vulnerabilidade",
+    "titulo": "Vulnerabilidades por quantia",
+    "tipo": 2
+  }
+]
