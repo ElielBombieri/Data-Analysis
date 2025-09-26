@@ -5,8 +5,7 @@ from openpyxl import Workbook
 
 #Conexão
 print('='*170)
-print('Mova o dataframe .csv para o mesmo nivel de diretório deste programa')
-caminho = 'modelo2.csv'#input('Digite o nome do arquivo:')
+caminho = 'teste/modelo2.csv' #input('Digite o caminho do arquivo:')
 delimitador = ';' #input('\nDigite o caracter que delimita as colunas do csv:') 
 print('='*170)
 df = pd.read_csv(caminho, sep=delimitador, engine='python')
@@ -51,7 +50,7 @@ df['Criticidade detalhamento'] = ('baixa: ' + df['Criticidade_tot'].str.count('B
 df = df.drop('Criticidade_tot', axis=1)
 
 df['Concat_OS'] = df['Specific Result'].astype(str) + df['Affected Software/OS'].astype(str)
-df['Sistema_Operacional'] = df['Concat_OS'].astype(str).apply(
+df['Sistema Operacional'] = df['Concat_OS'].astype(str).apply(
     lambda x: 
         'Linux'
         if 'Linux' in x or 'GNU' in x or 'Debian' in x
@@ -105,7 +104,7 @@ total_ip_com_KEV = df[
     ].sort_values(by=['Known Exploited Vulnerability'])
 
 #totais
-total_de_os = df.groupby('Sistema_Operacional')['Quantia de vulnerabilidade'].sum().sort_index(ascending=False)
+total_de_os = df.groupby('Sistema Operacional')['Quantia de vulnerabilidade'].sum().sort_index(ascending=False)
 total_vulnerabilidades = df['Quantia de vulnerabilidade'].sum()
 total_ip = len(df.drop_duplicates(subset=['IP']))
 total_vulnerabilidades_cve = df_apenas_com_cve['Quantia de vulnerabilidade'].sum()
@@ -125,21 +124,26 @@ dic_dados_gerais = {
 df_dados_gerais = pd.DataFrame(dic_dados_gerais)
 
 #Finalização
-os.mkdir('dataframes')
+# os.mkdir('dataframes')
 
-df_dados_gerais.to_csv('dataframes/Dados_gerais.csv', index=False, sep=';')
-top_ip_por_kev_cvss.to_csv('dataframes/IP_por_KEV_CVSS.csv', index=False, sep=';')
-top_ocorrencias_por_criticidade.to_csv('dataframes/Ocorrencias_por_criticidade.csv', index=False, sep=';')
-top_quantia_por_vulnerabilidade.to_csv('dataframes/Ocorrencias_por_quantidade.csv', index=False, sep=';')
-total_ip_com_KEV.to_csv('dataframes/IPs_que_possuem_KEV.csv', index=False, sep=';')
-top_ip_por_cvss.to_csv('dataframes/IP_por_CVSS.csv', index=False, sep=';')
-top_quantia_por_ip.to_csv('dataframes/IP_por_quantia.csv', index=True, sep=';')
-top_ip_por_epss.to_csv('dataframes/IP_por_EPSS.csv', index=False, sep=';')
-top_quantia_por_vulnerabilidade_1ano.to_csv('dataframes/Vulnerabilidades_por_quantia.csv', index=True, sep=';')
-top_quantia_por_criticidade.to_csv('dataframes/Quantia_de_cada_criticidade.csv', index=True, sep=';')
-top_quantia_por_criticidade_cve.to_csv('dataframes/Quantia_de_cada_criticidade_com_CVE.csv', sep=';')
-total_de_os.to_csv('dataframes/Vulnerabilidades_por_OS.csv', index=True, sep=';')
+# df_dados_gerais.to_csv('dataframes/Dados_gerais.csv', index=False, sep=delimitador)
+# top_ip_por_kev_cvss.to_csv('dataframes/IP_por_KEV_CVSS.csv', index=False, sep=delimitador)
+# top_ocorrencias_por_criticidade.to_csv('dataframes/Ocorrencias_por_criticidade.csv', index=False, sep=delimitador)
+# top_quantia_por_vulnerabilidade.to_csv('dataframes/Ocorrencias_por_quantidade.csv', index=True, sep=delimitador)
+# total_ip_com_KEV.to_csv('dataframes/IPs_que_possuem_KEV.csv', index=False, sep=delimitador)
+# top_ip_por_cvss.to_csv('dataframes/IP_por_CVSS.csv', index=False, sep=delimitador)
+# top_quantia_por_ip.to_csv('dataframes/IP_por_quantia.csv', index=True, sep=delimitador)
+# top_ip_por_epss.to_csv('dataframes/IP_por_EPSS.csv', index=False, sep=delimitador)
+# top_quantia_por_vulnerabilidade_1ano.to_csv('dataframes/Vulnerabilidades_por_quantia.csv', index=True, sep=delimitador)
+# top_quantia_por_criticidade.to_csv('dataframes/Quantia_de_cada_criticidade.csv', index=True, sep=delimitador)
+# top_quantia_por_criticidade_cve.to_csv('dataframes/Quantia_de_cada_criticidade_com_CVE.csv', sep=delimitador)
+# total_de_os.to_csv('dataframes/Vulnerabilidades_por_OS.csv', index=True, sep=delimitador)
+
+
 
 print('='*170)
 print('\Pasta com os dados, criado no mesmo diretório desse script\n')
 print('='*170)
+
+
+print(top_ip_por_epss)

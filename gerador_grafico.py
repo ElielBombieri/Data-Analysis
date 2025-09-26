@@ -1,31 +1,46 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import json 
 import numpy as np
 
 print('='*170)
-print('Mova o dataframe .csv para o mesmo nivel de diretório deste programa')
-caminho = 'dataframes/Vulnerabilidades_por_OS.csv'
-delimitador = ';' 
-print('='*170)
-df = pd.read_csv(caminho, sep=delimitador, engine='python')
-
-fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
-
-def func(pct, allvals):
-    absolute = int(np.round(pct/100.*np.sum(allvals)))
-    return f"{pct:.1f}%\n{absolute:d}"
 
 
-wedges, texts, autotexts = ax.pie(df['Quantia de vulnerabilidade'], autopct=lambda pct: func(pct, df['Quantia de vulnerabilidade']),
-                                  textprops=dict(color="w"))
 
-ax.legend(wedges, df['Sistema_Operacional'],
-          title='Sistemas Operacionais',
-          loc="center left",
-          bbox_to_anchor=(1, 0, 0.5, 1))
+with open('config.json', 'r', encoding='utf-8') as arquivo:
+    dados_do_json = json.load(arquivo)
 
-plt.setp(autotexts, size=8, weight="bold")
+print("\n--- Acessando os dados como um dicionário Python ---")
 
-ax.set_title("Vulnerabilidades por OS")
+for i in range(len(dados_do_json)):
+    arquivo_entrada = dados_do_json[i]['arquivo_entrada']
+    coluna_x = dados_do_json[i]['coluna_x']
+    coluna_y = dados_do_json[i]['coluna_y']
+    titulo = dados_do_json[i]['titulo']
+    tipo = dados_do_json[i]['tipo']
 
-plt.show()
+    df = pd.read_csv(arquivo_entrada, sep=';' , engine='python')
+
+    print('='*170)
+    print(f"Arquivo de entrada: {arquivo_entrada}")
+    print(f"Coluna X: {coluna_x}")
+    print(f"Coluna Y: {coluna_y}")
+    print(f"Titulo: {titulo}")
+    if(tipo == 2):
+        fig = plt.figure(figsize=(5,4))
+        grafico = fig.add_axes([0,0,0.9,0.9])
+        grafico.pie(df[coluna_y], labels=df[coluna_x], autopct=lambda v:f"{df[coluna_y].sum()*v/100:.3f}")
+        grafico.set_title(titulo, fontsize=15)
+        plt.show()
+    elif(tipo == 1):
+        fig = plt.figure(figsize=(7,5))
+        bar = fig.add_axes([0.2,0.2,0.6,0.7])
+        bar.bar(df[coluna_x], df[coluna_y])
+        bar.set_title(titulo, fontsize=15)
+        bar.set_xlabel(coluna_x, fontsize=15)
+        bar.set_ylabel(coluna_y, fontsize=15)
+        plt.show()
+    else:
+        print('='*170)
+        print('Opção incorreta')
+        print('='*170)
