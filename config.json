@@ -1,21 +1,21 @@
 [
   {
     "arquivo_entrada": "dataframes/IP_por_CVSS.csv",
-    "coluna_x": "IP",
+    "coluna_x": "IP e Quantia",
     "coluna_y": "CVSS",
     "titulo": "IP por CVSS",
     "tipo": 1
   },
   {
     "arquivo_entrada": "dataframes/IP_por_EPSS.csv",
-    "coluna_x": "IP",
+    "coluna_x": "IP e EPSS",
     "coluna_y": "Exploit Prediction Scoring System - EPSS",
     "titulo": "IP por EPSS",
     "tipo": 1
   },
   {
     "arquivo_entrada": "dataframes/IP_por_KEV_CVSS.csv",
-    "coluna_x": "IP",
+    "coluna_x": "IP e KEV",
     "coluna_y": "CVSS",
     "titulo": "IP por KEV e CVSS",
     "tipo": 1
