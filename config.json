@@ -1,44 +1,51 @@
 [
   {
+    "arquivo_entrada": "dataframes/Dados_gerais.csv",
+        "coluna_x": "Número de ativos",
+        "coluna_y": "Quantia total de vulnerabilidades:",
+        "titulo": "none",
+        "tipo": 3
+  },
+  {
     "arquivo_entrada": "dataframes/IP_por_CVSS.csv",
     "coluna_x": "IP e Quantia",
     "coluna_y": "CVSS",
-    "titulo": "IP por CVSS",
+    "titulo": "Top 5 ativos\n com mais vulnerabilidades por criticidade",
     "tipo": 1
   },
   {
     "arquivo_entrada": "dataframes/IP_por_EPSS.csv",
     "coluna_x": "IP e EPSS",
     "coluna_y": "Exploit Prediction Scoring System - EPSS",
-    "titulo": "IP por EPSS",
+    "titulo": "Top 5 prioritários\n de acordo com EPSS",
     "tipo": 1
   },
   {
     "arquivo_entrada": "dataframes/IP_por_KEV_CVSS.csv",
     "coluna_x": "IP e KEV",
     "coluna_y": "CVSS",
-    "titulo": "IP por KEV e CVSS",
+    "titulo": "Top 5 exploráveis",
     "tipo": 1
   },
   {
     "arquivo_entrada": "dataframes/IP_por_quantia.csv",
     "coluna_x": "IP",
     "coluna_y": "Quantia de vulnerabilidade",
-    "titulo": "IP por quantia",
+    "titulo": "Top 5 ativos\n com mais vulnerabilidades por quantidade",
     "tipo": 1
   },
   {
     "arquivo_entrada": "dataframes/Ocorrencias_por_criticidade.csv",
     "coluna_x": "NVT Name",
     "coluna_y": "CVSS",
-    "titulo": "Ocorrencias por criticidade",
+    "titulo": "Top 5 vulnerabilidades\n de acordo com o indice CVSS",
     "tipo": 2
   },
   {
     "arquivo_entrada": "dataframes/Ocorrencias_por_quantidade.csv",
     "coluna_x": "NVT Name",
     "coluna_y": "Quantia de vulnerabilidade",
-    "titulo": "Ocorrencias por quantidade",
+    "titulo": "Top 5 ocorrências ",
     "tipo": 2
   },
   {
@@ -58,7 +65,7 @@
   {
     "arquivo_entrada": "dataframes/Vulnerabilidades_por_OS.csv",
     "coluna_x": "Sistema Operacional",
-    "coluna_y": "Quantia de vulnerabilidade",
+    "coluna_y": "Contagem",
     "titulo": "Quantia de vulnerabilidades por OS",
     "tipo": 1
   },
@@ -66,7 +73,7 @@
     "arquivo_entrada": "dataframes/Vulnerabilidades_por_quantia.csv",
     "coluna_x": "NVT Name",
     "coluna_y": "Quantia de vulnerabilidade",
-    "titulo": "Vulnerabilidades por quantia",
+    "titulo": "Top 5 vulnerabilidades\n com mais de 1 ano de lançamento",
     "tipo": 2
   }
 ]

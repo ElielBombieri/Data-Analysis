@@ -17,12 +17,42 @@ df = df.drop([
     'Vulnerability Insight', 'Vulnerability Detection Method'], axis=1)
 
 #Colunas artificiais
-df['Quantia de vulnerabilidade'] = df['CVEs'].str.count('CVE').fillna(1)
-df['IP e EPSS'] = df['IP'].astype(str) + ' (' + df['Exploit Prediction Scoring System - EPSS'].round(3).astype(str) + ')'
-df['IP e KEV'] = df['IP'].astype(str) + ' (' + df['Known Exploited Vulnerability'].astype(str) + ', ' + df['CVSS'].astype(str) + ')'
-df['IP e Quantia'] = df['IP'].astype(str) + ' (' +  'Qtd: ' + df['Quantia de vulnerabilidade'].astype(str) + ')'
+df['Quantia de vulnerabilidade'] = (
+        df['CVEs'].str
+        .count('CVE')
+        .fillna(1)
+    )
 
+df['IP e EPSS'] = (
+        df['IP']
+        .astype(str) 
+        + ' (' + 
+        df['Exploit Prediction Scoring System - EPSS']
+        .round(3)
+        .astype(str)
+          + ')'
+    )
 
+df['IP e KEV'] = (
+        df['IP']
+        .astype(str) 
+        + ' (' 
+        + df['Known Exploited Vulnerability']
+        .astype(str) 
+        + ', ' 
+        + df['CVSS']
+        .astype(str) 
+        + ')'
+    )
+
+df['IP e Quantia'] = (
+        df['IP'].astype(str) 
+        + ' (' 
+        +  'Qtd: ' 
+        + df['Quantia de vulnerabilidade']
+        .astype(str) 
+        + ')'
+    )
 
 df['Criticidade Unica'] = df['CVSS'].apply(
     lambda x: 
@@ -33,29 +63,34 @@ df['Criticidade Unica'] = df['CVSS'].apply(
             'Media ' if x > 3.9 
                 else 'Baixa ')))
 
-df['Criticidade'] = df['CVSS'].apply(
-    lambda x: 
-    'Critica ' if x > 8.9 
-    else (
-        'Alta ' if x > 6.9 
+df['Criticidade'] = (df['CVSS'].apply(
+        lambda x: 
+        'Critica ' if x > 8.9 
         else (
-            'Media ' if x > 3.9 
-                else 'Baixa '))) * df['Quantia de vulnerabilidade'].astype(int)
+            'Alta ' if x > 6.9 
+            else (
+                'Media ' if x > 3.9 
+                    else 'Baixa '))) 
+        * df['Quantia de vulnerabilidade'].astype(int)
+    )
 
 df['Criticidade_tot'] = df.groupby('IP')['Criticidade'].transform(
-    lambda x:
-      ' '.join(x)
+        lambda x:
+          ' '.join(x)
       ).astype(str)
 
-df['Criticidade detalhamento'] = ('baixa: ' + df['Criticidade_tot'].str.count('Baixa').astype(str) 
-+ ' Media: '+ df['Criticidade_tot'].str.count('Media').astype(str) 
-+ ' Alta: '+ df['Criticidade_tot'].str.count('Alta').astype(str) 
-+ ' Critica: ' + df['Criticidade_tot'].str.count('Critica').astype(str))
+df['Criticidade detalhamento'] = (
+        'baixa: ' + df['Criticidade_tot'].str.count('Baixa').astype(str) 
+        + ' Media: '+ df['Criticidade_tot'].str.count('Media').astype(str) 
+        + ' Alta: '+ df['Criticidade_tot'].str.count('Alta').astype(str) 
+        + ' Critica: ' + df['Criticidade_tot'].str.count('Critica').astype(str)
+    )
 
 df = df.drop('Criticidade_tot', axis=1)
 
-df['Concat_OS'] = df['Specific Result'].astype(str) + df['Affected Software/OS'].astype(str)
-df['Sistema Operacional'] = df['Concat_OS'].astype(str).apply(
+df_ip = df.drop_duplicates(subset=['IP']).copy()
+df_ip['Concat_OS'] = df_ip['Specific Result'].astype(str) + df_ip['Affected Software/OS'].astype(str)
+df_ip['Sistema Operacional'] = df_ip['Concat_OS'].astype(str).apply(
     lambda x: 
         'Linux'
         if 'Linux' in x or 'GNU' in x or 'Debian' in x
@@ -67,7 +102,7 @@ df['Sistema Operacional'] = df['Concat_OS'].astype(str).apply(
             )
         )
     )
-df = df.drop('Concat_OS', axis=1)
+df_ip = df_ip.drop('Concat_OS', axis=1)
 
 #df filtrados
 df_apenas_com_cve = df[df['CVEs'].fillna(0) != 0]
@@ -83,24 +118,24 @@ top_ip_por_cvss = df[
 
 top_quantia_por_ip = df.groupby(['IP', 'Criticidade detalhamento'])['Quantia de vulnerabilidade'].sum().sort_values(ascending=False).head(5)
 top_quantia_por_vulnerabilidade = df.groupby('NVT Name')['Quantia de vulnerabilidade'].sum().sort_values(ascending=False).head(5)
-top_quantia_por_criticidade = df.groupby('Criticidade Unica')['Quantia de vulnerabilidade'].sum().sort_values(ascending=False)
-top_quantia_por_criticidade_cve = df_apenas_com_cve.groupby('Criticidade Unica')['Quantia de vulnerabilidade'].sum().sort_values(ascending=False)
+top_quantia_por_criticidade = df.groupby('Criticidade Unica')['Quantia de vulnerabilidade'].sum().round(1).reset_index().sort_values(by='Criticidade Unica')
+top_quantia_por_criticidade_cve = df_apenas_com_cve.groupby('Criticidade Unica')['Quantia de vulnerabilidade'].sum().reset_index().sort_values(by='Criticidade Unica')
 
 top_quantia_por_vulnerabilidade_1ano = df_cve_ano.groupby(
         ['NVT Name', 'ano de lançamento - CVE']
-    )['Quantia de vulnerabilidade'].sum().sort_values(ascending=False).head(5)
+    )['Quantia de vulnerabilidade'].sum().round(1).sort_values(ascending=False).head(5)
 
 top_ip_por_epss = df[
         ['IP e EPSS', 'NVT Name', 'Exploit Prediction Scoring System - EPSS']
     ].fillna(0).sort_values('Exploit Prediction Scoring System - EPSS' ,ascending=False).head(5)
 
-top_ip_por_kev_cvss = df[df['Known Exploited Vulnerability'] != ''][
+top_ip_por_kev_cvss = df[
         ['IP e KEV', 'Known Exploited Vulnerability', 'CVSS']
-    ].dropna().sort_values(by=['Known Exploited Vulnerability','CVSS'], ascending=[True, False]).head(5)
+    ].sort_values(by=['Known Exploited Vulnerability','CVSS'], ascending=[True, False]).head(5)
 
 top_ocorrencias_por_criticidade = df.groupby(
         ['NVT Name', 'CVSS']
-    )['Quantia de vulnerabilidade'].sum().reset_index().sort_values(by=['CVSS', 'Quantia de vulnerabilidade'], ascending=False).head(5)
+    )['Quantia de vulnerabilidade'].sum().round(1).reset_index().sort_values(by=['CVSS', 'Quantia de vulnerabilidade'], ascending=False).head(5)
 
 total_ip_com_KEV = df[
         df['Known Exploited Vulnerability'].fillna('0') != '0'
@@ -109,7 +144,7 @@ total_ip_com_KEV = df[
     ].sort_values(by=['Known Exploited Vulnerability'])
 
 #totais
-total_de_os = df.groupby('Sistema Operacional')['Quantia de vulnerabilidade'].sum().sort_index(ascending=False)
+total_de_os = df_ip.groupby('Sistema Operacional')['Sistema Operacional'].count().sort_index(ascending=False).rename('Contagem').reset_index()
 total_vulnerabilidades = df['Quantia de vulnerabilidade'].sum()
 total_ip = len(df.drop_duplicates(subset=['IP']))
 total_vulnerabilidades_cve = df_apenas_com_cve['Quantia de vulnerabilidade'].sum()
@@ -143,7 +178,6 @@ top_quantia_por_vulnerabilidade_1ano.to_csv('dataframes/Vulnerabilidades_por_qua
 top_quantia_por_criticidade.to_csv('dataframes/Quantia_de_cada_criticidade.csv', index=True, sep=delimitador)
 top_quantia_por_criticidade_cve.to_csv('dataframes/Quantia_de_cada_criticidade_com_CVE.csv', sep=delimitador)
 total_de_os.to_csv('dataframes/Vulnerabilidades_por_OS.csv', index=True, sep=delimitador)
-
 
 print('='*170)
 print('\nPasta com os dados, criado no mesmo diretório desse script\n')
